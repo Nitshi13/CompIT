@@ -8,6 +8,7 @@ const { Scenes, session } = require('telegraf');
 
 import { bot } from './config/telegram.config';
 import { setBotCommands } from './utils/setBotCommands';
+import { activateUserProfile } from './utils/activateUserProfile';
 import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
 import { registerNewUser } from './scenes/registerNewUser';
@@ -44,6 +45,16 @@ export const handleEvents = async (): Promise<any> => {
   // Update user role to Admin
   bot.hears(`set_admin_${process.env['ADMIN_SECRET_KEY']}`, async (ctx: any): Promise<any> => {
     await setAdmin(ctx);
+  });
+
+  // Bot hears any text and actions and matchig it
+  bot.use(async (ctx: any) => {
+    const actionFromButton: string = ctx?.update?.callback_query?.data || '';
+    const isActivateUserAction: boolean = /activate_user_id=/.test(actionFromButton);
+
+    if (isActivateUserAction) {
+      await activateUserProfile(actionFromButton, ctx);
+    }
   });
 
   bot.launch();

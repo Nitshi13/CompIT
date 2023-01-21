@@ -8,7 +8,7 @@ import { UserModel, IUser } from '../model/user.model';
 
 import MESSAGES_AU from '../translate/messagesUA.json';
 
-export const updateUser = async (user: { chatId: number }, updateData, ctx: any): Promise<IUser> => {
+export const updateUser = async (user: { _id?: string; chatId?: number }, updateData, ctx: any): Promise<IUser> => {
   let userData: null | IUser = null;
 
   try {
