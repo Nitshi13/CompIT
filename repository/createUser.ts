@@ -8,7 +8,7 @@ import { UserModel, IUser } from '../model/user.model';
 
 import MESSAGES_AU from '../translate/messagesUA.json';
 
-export const createUser = async (user, ctx: any): Promise<IUser> => {
+export const createUser = async (user: IUser, ctx: any): Promise<IUser> => {
   let userData: null | IUser = null;
 
   try {

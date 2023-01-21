@@ -5,6 +5,9 @@
  * "Роби добре, та тільки добре! А можеш? - Роби краще!"
  */
 const { Scenes, Markup } = require('telegraf');
+import axios from 'axios';
+
+import { bot } from '../config/telegram.config';
 
 import MESSAGES_AU from '../translate/messagesUA.json';
 import { POSITIONS } from '../constants/positions';
@@ -118,6 +121,8 @@ export const registerNewUser = new Scenes.WizardScene(
       return;
     }
 
+    await ctx.reply(MESSAGES_AU.ONE_SEC, { parse_mode: 'html' });
+
     // Set user position
     ctx.wizard.state.userData.position = userPosition;
 
@@ -139,14 +144,75 @@ export const registerNewUser = new Scenes.WizardScene(
     await ctx.reply(MESSAGES_AU.DOWNLOAD_CERTIFICATE, { parse_mode: 'html' });
 
     await handleDelayedSendMessage({
-      delayValue: 5000,
+      delayValue: 1000,
       ctx,
       action: sendCancelRegistrationBtn,
     });
+
+    return ctx.wizard.next();
   },
 
   async (ctx: any): Promise<any> => {
-    console.log('[ctx]', ctx);
+    const finishUserRegistration: string = ctx?.update?.callback_query?.data;
+
+    // If user press the buuton "Finish registration"
+    if (finishUserRegistration) {
+      const userData = ctx.wizard.state.userData;
+      const createdUserData = await createUser(userData, ctx);
+
+      if (!createdUserData) {
+        await ctx.reply(MESSAGES_AU.ERROR_DB_REQUEST, { parse_mode: 'html' });
+
+        return ctx.scene.leave();
+      }
+
+      await ctx.reply(MESSAGES_AU.SUCCESS_CREATE_USER, { parse_mode: 'html' });
+
+      return ctx.scene.leave();
+    }
+
+    // Get user donwloaded file
+    const userFiles = ctx?.update?.message?.photo;
+    const isUserFiles = userFiles && !!userFiles.length;
+
+    if (!isUserFiles) {
+      await ctx.reply(MESSAGES_AU.ERROR_UPLOAD_FILE, { parse_mode: 'html' });
+    }
+
+    // Get last uploaded user's file id
+    const { file_id } = userFiles[userFiles.length - 1];
+    // Get file's url
+    const { href: fileUrl } = await bot.telegram.getFileLink(file_id);
+
+    // Donwload and encode user's file to
+    let imageBase64: null | string = null;
+
+    try {
+      const { status, data } = await axios.get(fileUrl, { responseType: 'arraybuffer' });
+
+      if (status !== 200) {
+        return await ctx.reply(MESSAGES_AU.ERROR_UPLOAD_FILE, { parse_mode: 'html' });
+      }
+
+      imageBase64 = Buffer.from(data).toString('base64');
+    } catch (error) {
+      await ctx.reply(MESSAGES_AU.ERROR_UPLOAD_FILE, { parse_mode: 'html' });
+    }
+
+    // Append user file (base64) to userData
+    ctx.wizard.state.userData.certificate = imageBase64;
+    const userData = ctx.wizard.state.userData;
+
+    const createdUserData = await createUser(userData, ctx);
+
+    if (!createdUserData) {
+      await ctx.reply(MESSAGES_AU.ERROR_DB_REQUEST, { parse_mode: 'html' });
+
+      return ctx.scene.leave();
+    }
+
+    // TODO: Send notification to admins
+    await ctx.reply(MESSAGES_AU.SUCCESS_CREATE_SPECIALIST, { parse_mode: 'html' });
 
     return ctx.scene.leave();
   },

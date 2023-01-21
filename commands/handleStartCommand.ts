@@ -18,13 +18,7 @@ export const handleStartCommand = async (options: { ctx: any; messagesUA: IMessa
   const { first_name } = ctx.from;
 
   // Look for the same User in DB
-  let userData: null | IUser = null;
-
-  try {
-    userData = await getUser({ chatId }, ctx);
-  } catch (error) {
-    console.log('[ERROR]:: Start command, find user', error.message);
-  }
+  const userData: null | IUser = await getUser({ chatId }, ctx);
 
   // New User actions
   if (!userData) {
@@ -37,13 +31,13 @@ export const handleStartCommand = async (options: { ctx: any; messagesUA: IMessa
     });
 
     await handleDelayedSendMessage({
-      delayValue: 2000,
+      delayValue: 3000,
       ctx,
       message: `${messagesUA.START_MESSAGE_3_NEW_USER}`,
     });
 
     await handleDelayedSendMessage({
-      delayValue: 5000,
+      delayValue: 7000,
       ctx,
       message: `${messagesUA.START_MESSAGE_4_NEW_USER}`,
     });
