@@ -4,11 +4,9 @@
  * Telegram @Yurets7777 E-mail: yuretshome@gmail.com
  * "Роби добре, та тільки добре! А можеш? - Роби краще!"
  */
+const { Telegraf } = require('telegraf');
 
-const { Telegraf } = require("telegraf");
-
-const token = "5816038047:AAHsH6xM5umfsyQr9md-UMKNxRazShCwNlQ";
-// process.env["PELART_BOT_API"];
+const token = process.env['PELART_BOT_API'];
 
 // For example this Bot is available on https://t.me/PelartLaboratoryBot
 export const bot = new Telegraf(token);

@@ -37,11 +37,7 @@ export const handleEvents = async (): Promise<any> => {
 
   // // Actions handlers
   bot.action('registerNewUser', async (ctx: any) => {
-    try {
-      await ctx.scene.enter('registerNewUser');
-    } catch (error) {
-      console.log('[error]', error.message);
-    }
+    await ctx.scene.enter('registerNewUser');
   });
 
   bot.launch();
