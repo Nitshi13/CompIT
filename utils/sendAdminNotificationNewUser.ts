@@ -16,7 +16,7 @@ import { uppercaseWords } from '../utils/uppercaseWords';
 import MESSAGES_AU from '../translate/messagesUA.json';
 
 export const sendAdminNotificationNewUser = async (userData, ctx) => {
-  const { firstName, lastName, phone, position } = userData;
+  const { firstName, lastName, phone, position, certificate, isActive } = userData;
 
   const admins = await getUsers({ userRole: USER_ROLES.ADMIN }, ctx);
   const isAdmins = !!admins.length;
@@ -25,7 +25,7 @@ export const sendAdminNotificationNewUser = async (userData, ctx) => {
     return;
   }
 
-  const messageToSend = `${MESSAGES_AU.NOTIS_NEW_USER} \n${MESSAGES_AU.FIRST_NAME} ${uppercaseWords(firstName)} \n${
+  let messageToSend = `${MESSAGES_AU.NOTIS_NEW_USER} \n${MESSAGES_AU.FIRST_NAME} ${uppercaseWords(firstName)} \n${
     MESSAGES_AU.LAST_NAME
   } ${uppercaseWords(lastName)} \n${MESSAGES_AU.PHONE} ${phone} \n${MESSAGES_AU.POSITION} ${position}`;
 
@@ -36,6 +36,32 @@ export const sendAdminNotificationNewUser = async (userData, ctx) => {
       await bot.telegram.sendMessage(chatId, messageToSend, {
         parse_mode: 'html',
       });
+    } else {
+      if (!certificate) {
+        messageToSend += `\n${MESSAGES_AU.CERTIFICATE_DOES_NOT_EXIST}`;
+      }
+
+      messageToSend += `\n${MESSAGES_AU.PROFILE_IS_ACTIVE} ${isActive ? 'ТАК' : 'НІ'}`;
+
+      try {
+        await bot.telegram.sendMessage(chatId, messageToSend, {
+          parse_mode: 'html',
+        });
+      } catch (error) {
+        console.log('[error] ::: sendMessage', error.message);
+      }
+
+      if (certificate) {
+        const { telegramFileId } = certificate;
+
+        try {
+          await bot.telegram.sendPhoto(chatId, telegramFileId, { caption: `${firstName}` });
+        } catch (error) {
+          console.log('[error] ::: sendPhoto', error.message);
+        }
+      }
     }
+
+    // TODO: Add Button to activate user profile
   }
 };

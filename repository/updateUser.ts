@@ -12,7 +12,9 @@ export const updateUser = async (user: { chatId: number }, updateData, ctx: any)
   let userData: null | IUser = null;
 
   try {
-    userData = await UserModel.findOneAndUpdate(user, updateData, { new: true, useFindAndModify: false });
+    userData = await UserModel.findOneAndUpdate(user, updateData, { new: true, useFindAndModify: false }).populate(
+      'certificate',
+    );
   } catch (error) {
     console.log('[error => updateUser] :::', error.message);
     await ctx.reply(MESSAGES_AU.ERROR_DB_REQUEST, { parse_mode: 'html' });

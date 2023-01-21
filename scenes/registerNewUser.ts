@@ -12,13 +12,16 @@ import { bot } from '../config/telegram.config';
 import MESSAGES_AU from '../translate/messagesUA.json';
 import { POSITIONS } from '../constants/positions';
 
+import { IUser } from '../model/user.model';
+import { ICertificate } from '../model/certificate.model';
 import { createUser } from '../repository/createUser';
+import { updateUser } from '../repository/updateUser';
+import { createCertificate } from '../repository/createCertificate';
 
 import { validateUserFirstName } from '../validators/validateUserFirstName';
 import { validateUserLastName } from '../validators/validateUserLastName';
 import { handleDelayedSendMessage } from '../utils/handleDelayedSendMessage';
 import { sendAdminNotificationNewUser } from '../utils/sendAdminNotificationNewUser';
-import { IUser } from '../model/user.model';
 
 export const registerNewUser = new Scenes.WizardScene(
   'registerNewUser',
@@ -180,6 +183,8 @@ export const registerNewUser = new Scenes.WizardScene(
 
     if (!isUserFiles) {
       await ctx.reply(MESSAGES_AU.ERROR_UPLOAD_FILE, { parse_mode: 'html' });
+
+      return;
     }
 
     // Get last uploaded user's file id
@@ -202,11 +207,8 @@ export const registerNewUser = new Scenes.WizardScene(
       await ctx.reply(MESSAGES_AU.ERROR_UPLOAD_FILE, { parse_mode: 'html' });
     }
 
-    // Append user file (base64) to userData
-    ctx.wizard.state.userData.certificate = imageBase64;
     const userData = ctx.wizard.state.userData;
-
-    const createdUserData = await createUser(userData, ctx);
+    const createdUserData: IUser = await createUser(userData, ctx);
 
     if (!createdUserData) {
       await ctx.reply(MESSAGES_AU.ERROR_DB_REQUEST, { parse_mode: 'html' });
@@ -214,8 +216,16 @@ export const registerNewUser = new Scenes.WizardScene(
       return ctx.scene.leave();
     }
 
-    await sendAdminNotificationNewUser(createdUserData, ctx);
+    const createdCertificate: ICertificate = await createCertificate(
+      { owner: createdUserData, base64: imageBase64, telegramFileId: file_id },
+      ctx,
+    );
+
+    const { chatId } = userData;
+    const updatedUserData: IUser = await updateUser({ chatId }, { certificate: createdCertificate }, ctx);
+
     await ctx.reply(MESSAGES_AU.SUCCESS_CREATE_SPECIALIST, { parse_mode: 'html' });
+    await sendAdminNotificationNewUser(updatedUserData, ctx);
 
     return ctx.scene.leave();
   },
