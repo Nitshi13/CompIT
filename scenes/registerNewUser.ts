@@ -17,6 +17,8 @@ import { createUser } from '../repository/createUser';
 import { validateUserFirstName } from '../validators/validateUserFirstName';
 import { validateUserLastName } from '../validators/validateUserLastName';
 import { handleDelayedSendMessage } from '../utils/handleDelayedSendMessage';
+import { sendAdminNotificationNewUser } from '../utils/sendAdminNotificationNewUser';
+import { IUser } from '../model/user.model';
 
 export const registerNewUser = new Scenes.WizardScene(
   'registerNewUser',
@@ -79,9 +81,10 @@ export const registerNewUser = new Scenes.WizardScene(
       ],
     ];
 
-    await ctx.reply(MESSAGES_AU.SHARE_PHONE_BTN_TITLE, {
+    await ctx.reply(MESSAGES_AU.SHARE_PHONE_PARAGRAPH, {
       reply_markup: { keyboard },
     });
+    await ctx.reply(MESSAGES_AU.SHARE_PHONE_PARAGRAPH_2, { parse_mode: 'html' });
 
     return ctx.wizard.next();
   },
@@ -135,9 +138,9 @@ export const registerNewUser = new Scenes.WizardScene(
       await ctx.reply(MESSAGES_AU.FINISH_REGISTER_AS_PERSON, { parse_mode: 'html' });
 
       const userData = ctx.wizard.state.userData;
-      await createUser(userData, ctx);
+      const createdUserData: IUser = await createUser(userData, ctx);
+      await sendAdminNotificationNewUser(createdUserData, ctx);
 
-      // TODO: Send notification to admins
       return ctx.scene.leave();
     }
 
@@ -211,7 +214,7 @@ export const registerNewUser = new Scenes.WizardScene(
       return ctx.scene.leave();
     }
 
-    // TODO: Send notification to admins
+    await sendAdminNotificationNewUser(createdUserData, ctx);
     await ctx.reply(MESSAGES_AU.SUCCESS_CREATE_SPECIALIST, { parse_mode: 'html' });
 
     return ctx.scene.leave();

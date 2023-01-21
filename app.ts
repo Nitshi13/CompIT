@@ -9,6 +9,7 @@ const { Scenes, session } = require('telegraf');
 import { bot } from './config/telegram.config';
 import { setBotCommands } from './utils/setBotCommands';
 import { handleStartCommand } from './commands/handleStartCommand';
+import { setAdmin } from './commands/setAdmin';
 import { registerNewUser } from './scenes/registerNewUser';
 
 import messagesUA from './translate/messagesUA.json';
@@ -35,9 +36,14 @@ export const handleEvents = async (): Promise<any> => {
   //     await sendCatalogButton({ ctx });
   // });
 
-  // // Actions handlers
-  bot.action('registerNewUser', async (ctx: any) => {
+  // Actions handlers
+  bot.action('registerNewUser', async (ctx: any): Promise<any> => {
     await ctx.scene.enter('registerNewUser');
+  });
+
+  // Update user role to Admin
+  bot.hears(`set_admin_${process.env['ADMIN_SECRET_KEY']}`, async (ctx: any): Promise<any> => {
+    await setAdmin(ctx);
   });
 
   bot.launch();
