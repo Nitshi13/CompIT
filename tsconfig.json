@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "target": "ES5"
+    "module": "CommonJS",
+    "target": "ES6"
   }
 }
