@@ -4,8 +4,6 @@
  * Telegram @Yurets7777 E-mail: yuretshome@gmail.com
  * "Роби добре, та тільки добре! А можеш? - Роби краще!"
  */
-const { Markup } = require('telegraf');
-
 import { bot } from '../config/telegram.config';
 
 import { IUser } from '../model/user.model';
@@ -13,17 +11,17 @@ import { getUser } from '../repository/getUser';
 import { updateUser } from '../repository/updateUser';
 import { getUsers } from '../repository/getUsers';
 
-import { uppercaseWords } from '../utils/uppercaseWords';
+import { uppercaseWords } from './uppercaseWords';
 
 import { USER_ROLES } from '../constants/userRoles';
 
 import MESSAGES_AU from '../translate/messagesUA.json';
 
-export const activateUserProfile = async (data: string, ctx: any) => {
-  const userId: string = data.replace('activate_user_id=', '');
+export const deactivateUserProfile = async (data: string, ctx: any) => {
+  const userId = data.replace('deactivate_user_id=', '');
 
+  const admins: [] | Array<IUser> = (await getUsers({ userRole: USER_ROLES.ADMIN }, ctx)) || [];
   const userData: null | IUser = await getUser({ _id: userId }, ctx);
-  const admins: Array<IUser> | [] = (await getUsers({ userRole: USER_ROLES.ADMIN }, ctx)) || [];
 
   if (!userData) {
     for (let i = 0; i < admins.length; i++) {
@@ -34,7 +32,7 @@ export const activateUserProfile = async (data: string, ctx: any) => {
           parse_mode: 'html',
         });
       } catch (error) {
-        console.log('[error] ::: sendMessage => activateUserProfile', error.message);
+        console.log('[error] ::: sendMessage => deactivateUserProfile', error.message);
       }
     }
 
@@ -43,8 +41,8 @@ export const activateUserProfile = async (data: string, ctx: any) => {
 
   const { _id, chatId, firstName, lastName, isActive } = userData;
 
-  // If user profile already active return error message
-  if (isActive) {
+  // If user profile is alreary not active
+  if (!isActive) {
     for (let i = 0; i < admins.length; i++) {
       const { chatId } = admins[i];
 
@@ -52,32 +50,32 @@ export const activateUserProfile = async (data: string, ctx: any) => {
         await bot.telegram.sendMessage(
           chatId,
           `${uppercaseWords(firstName)} ${uppercaseWords(lastName)} \n\n${
-            MESSAGES_AU.ERROR_USER_PROFILE_ALREADY_ACTIVATE
+            MESSAGES_AU.ERROR_USER_PROFILE_ALREADY_DEACTIVATE
           }`,
           {
             parse_mode: 'html',
           },
         );
       } catch (error) {
-        console.log('[error] ::: sendMessage => activateUserProfile', error.message);
+        console.log('[error] ::: sendMessage => deactivateUserProfile', error.message);
       }
     }
 
     return;
   }
 
-  const updatedUserData: null | IUser = await updateUser({ _id: userId }, { isActive: true }, ctx);
+  const updatedUserData = await updateUser({ _id: userId }, { isActive: false }, ctx);
 
   if (!updatedUserData) {
     for (let i = 0; i < admins.length; i++) {
       const { chatId } = admins[i];
 
       try {
-        await bot.telegram.sendMessage(chatId, MESSAGES_AU.ERROR_USER_PROFILE_ACTIVATE, {
+        await bot.telegram.sendMessage(chatId, MESSAGES_AU.ERROR_USER_PROFILE_DEACTIVATE, {
           parse_mode: 'html',
         });
       } catch (error) {
-        console.log('[error] ::: sendMessage => activateUserProfile', error.message);
+        console.log('[error] ::: sendMessage => deactivateUserProfile', error.message);
       }
     }
 
@@ -86,14 +84,12 @@ export const activateUserProfile = async (data: string, ctx: any) => {
 
   // Send notification to user
   try {
-    await bot.telegram.sendMessage(chatId, `${uppercaseWords(firstName)}, ${MESSAGES_AU.ACTIVATED_MESSAGE_TO_USER}`, {
+    await bot.telegram.sendMessage(chatId, `${uppercaseWords(firstName)}, ${MESSAGES_AU.DEACTIVATED_MESSAGE_TO_USER}`, {
       parse_mode: 'html',
     });
   } catch (error) {
     console.log('[error] ::: sendMessage', error.message);
   }
-
-  const keyboard = [[Markup.button.callback(`Деактивувати ${uppercaseWords(firstName)}`, `deactivate_user_id=${_id}`)]];
 
   // Send notification to all admins
   for (let i = 0; i < admins.length; i++) {
@@ -102,20 +98,13 @@ export const activateUserProfile = async (data: string, ctx: any) => {
     try {
       await bot.telegram.sendMessage(
         chatId,
-        `${uppercaseWords(firstName)} ${uppercaseWords(lastName)} \n\n${MESSAGES_AU.SUCCESS_ACTIVATE_USER_PROFILE}`,
+        `${uppercaseWords(firstName)} ${uppercaseWords(lastName)} \n\n${MESSAGES_AU.SUCCESS_DEACTIVATE_USER_PROFILE}`,
         {
           parse_mode: 'html',
         },
       );
     } catch (error) {
-      console.log('[error] ::: sendMessage => activateUserProfile', error.message);
-    }
-
-    // Send button for activating user's profile in DB
-    try {
-      await bot.telegram.sendMessage(chatId, `${MESSAGES_AU.DEACTIVATE_USER_PROFILE}`, Markup.inlineKeyboard(keyboard));
-    } catch (error) {
-      console.log('[error] ::: sendPhoto => activateUserProfile', error.message);
+      console.log('[error] ::: sendMessage => deactivateUserProfile', error.message);
     }
   }
 };

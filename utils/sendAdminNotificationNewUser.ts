@@ -76,7 +76,7 @@ export const sendAdminNotificationNewUser = async (userData, ctx) => {
       try {
         await bot.telegram.sendMessage(chatId, `${MESSAGES_AU.ACTIVATE_USER_PROFILE}`, Markup.inlineKeyboard(keyboard));
       } catch (error) {
-        console.log('[error] ::: sendPhoto', error.message);
+        console.log('[error] ::: sendMessage', error.message);
       }
     }
   }

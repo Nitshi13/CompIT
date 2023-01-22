@@ -9,6 +9,7 @@ const { Scenes, session } = require('telegraf');
 import { bot } from './config/telegram.config';
 import { setBotCommands } from './utils/setBotCommands';
 import { activateUserProfile } from './utils/activateUserProfile';
+import { deactivateUserProfile } from './utils/deactivateUserProfile';
 import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
 import { registerNewUser } from './scenes/registerNewUser';
@@ -50,10 +51,13 @@ export const handleEvents = async (): Promise<any> => {
   // Bot hears any text and actions and matchig it
   bot.use(async (ctx: any) => {
     const actionFromButton: string = ctx?.update?.callback_query?.data || '';
-    const isActivateUserAction: boolean = /activate_user_id=/.test(actionFromButton);
+    const isActivateUserAction: boolean = /^activate_user_id=/.test(actionFromButton);
+    const isВDeactivateUserAction: boolean = /^deactivate_user_id=/.test(actionFromButton);
 
     if (isActivateUserAction) {
       await activateUserProfile(actionFromButton, ctx);
+    } else if (isВDeactivateUserAction) {
+      await deactivateUserProfile(actionFromButton, ctx);
     }
   });
 
