@@ -173,6 +173,7 @@ export const registerNewUser = new Scenes.WizardScene(
       }
 
       await ctx.reply(MESSAGES_AU.SUCCESS_CREATE_USER, { parse_mode: 'html' });
+      await sendAdminNotificationNewUser(createdUserData, ctx);
 
       return ctx.scene.leave();
     }

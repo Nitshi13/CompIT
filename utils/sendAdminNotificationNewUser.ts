@@ -8,6 +8,7 @@ const { Markup } = require('telegraf');
 
 import { bot } from '../config/telegram.config';
 
+import { IUser } from '../model/user.model';
 import { getUsers } from '../repository/getUsers';
 
 import { USER_ROLES } from '../constants/userRoles';
@@ -20,8 +21,8 @@ import MESSAGES_AU from '../translate/messagesUA.json';
 export const sendAdminNotificationNewUser = async (userData, ctx) => {
   const { _id, firstName, lastName, phone, position, certificate, isActive } = userData;
 
-  const admins = await getUsers({ userRole: USER_ROLES.ADMIN }, ctx);
-  const isAdmins = !!admins.length;
+  const admins: [] | Array<IUser> = (await getUsers({ userRole: USER_ROLES.ADMIN }, ctx)) || [];
+  const isAdmins: boolean = !!admins.length;
 
   if (!isAdmins) {
     return;
@@ -70,13 +71,17 @@ export const sendAdminNotificationNewUser = async (userData, ctx) => {
         } catch (error) {
           console.log('[error] ::: sendPhoto', error.message);
         }
-      }
 
-      // Send button for activating user's profile in DB
-      try {
-        await bot.telegram.sendMessage(chatId, `${MESSAGES_AU.ACTIVATE_USER_PROFILE}`, Markup.inlineKeyboard(keyboard));
-      } catch (error) {
-        console.log('[error] ::: sendMessage', error.message);
+        // Send button for activating user's profile in DB
+        try {
+          await bot.telegram.sendMessage(
+            chatId,
+            `${MESSAGES_AU.ACTIVATE_USER_PROFILE}`,
+            Markup.inlineKeyboard(keyboard),
+          );
+        } catch (error) {
+          console.log('[error] ::: sendMessage', error.message);
+        }
       }
     }
   }
