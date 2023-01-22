@@ -10,6 +10,7 @@ import { bot } from './config/telegram.config';
 import { setBotCommands } from './utils/setBotCommands';
 import { activateUserProfile } from './utils/activateUserProfile';
 import { deactivateUserProfile } from './utils/deactivateUserProfile';
+import { setUserDocument } from './utils/setUserDocument';
 import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
 import { registerNewUser } from './scenes/registerNewUser';
@@ -46,6 +47,11 @@ export const handleEvents = async (): Promise<any> => {
   // Update user role to Admin
   bot.hears(`set_admin_${process.env['ADMIN_SECRET_KEY']}`, async (ctx: any): Promise<any> => {
     await setAdmin(ctx);
+  });
+
+  // Bot waiting for any photo
+  bot.on('photo', async (ctx: any): Promise<any> => {
+    await setUserDocument(ctx);
   });
 
   // Bot hears any text and actions and matchig it
