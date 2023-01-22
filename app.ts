@@ -11,20 +11,23 @@ import { setBotCommands } from './utils/setBotCommands';
 import { activateUserProfile } from './utils/activateUserProfile';
 import { deactivateUserProfile } from './utils/deactivateUserProfile';
 import { setUserDocument } from './utils/setUserDocument';
+
 import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
+
 import { registerNewUser } from './scenes/registerNewUser';
+import { updateUserInfo } from './scenes/updateUserInfo';
 
 import messagesUA from './translate/messagesUA.json';
 
-const registerNewUserStages = new Scenes.Stage([registerNewUser]);
+const scenes = new Scenes.Stage([registerNewUser, updateUserInfo]);
 
 export const handleEvents = async (): Promise<any> => {
   await setBotCommands(bot);
 
   // Scenes
   bot.use(session());
-  bot.use(registerNewUserStages.middleware());
+  bot.use(scenes.middleware());
 
   // Menu commands handlers
   bot.start(async (ctx: any): Promise<any> => {
@@ -39,9 +42,13 @@ export const handleEvents = async (): Promise<any> => {
   //     await sendCatalogButton({ ctx });
   // });
 
-  // Actions handlers
+  // Scenes handlers
   bot.action('registerNewUser', async (ctx: any): Promise<any> => {
     await ctx.scene.enter('registerNewUser');
+  });
+
+  bot.action('updateUserInfo', async (ctx: any): Promise<any> => {
+    await ctx.scene.enter('updateUserInfo');
   });
 
   // Update user role to Admin

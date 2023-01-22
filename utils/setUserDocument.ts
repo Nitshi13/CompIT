@@ -15,8 +15,10 @@ import { sendRegisterBtn } from './sendRegisterBtn';
 import { uppercaseWords } from './uppercaseWords';
 import { handleUserDocument } from './handleUserDocument';
 import { sendAdminNotificationUploadDocument } from './sendAdminNotificationUploadDocument';
+import { sendUpdateUserInfoBtn } from './sendUpdateUserInfoBtn';
 
 import MESSAGES_AU from '../translate/messagesUA.json';
+import { POSITIONS } from '../constants/positions';
 
 export const setUserDocument = async (ctx: any) => {
   const chatId = ctx.update.message.from.id;
@@ -37,15 +39,21 @@ export const setUserDocument = async (ctx: any) => {
     });
   }
 
-  const { firstName, certificate } = userData;
+  const { firstName, certificate, position } = userData;
+
+  if (position === POSITIONS.PERSON) {
+    await ctx.reply(`${uppercaseWords(firstName)}, ${MESSAGES_AU.ERROR_UPLOAD_DOC_FOR_PERSON}`, {
+      parse_mode: 'html',
+    });
+
+    return await sendUpdateUserInfoBtn(ctx);
+  }
 
   if (certificate) {
     return await ctx.reply(`${uppercaseWords(firstName)}, ${MESSAGES_AU.ERROR_EXIST_CERTIFICATE}`, {
       parse_mode: 'html',
     });
   }
-
-  //TODO: Check user position to handle it (update position or send message to deny access)
 
   const { imageBase64, file_id } = await handleUserDocument(ctx);
 
