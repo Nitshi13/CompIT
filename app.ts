@@ -14,6 +14,9 @@ import { setUserDocument } from './utils/setUserDocument';
 
 import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
+import { sendCatalogButton } from './commands/sendCatalogButton';
+import { sendProtocolsButtons } from './commands/sendProtocolsButtons';
+import { sendSeminarsSchedule } from './commands/sendSeminarsSchedule';
 
 import { registerNewUser } from './scenes/registerNewUser';
 import { updateUserInfo } from './scenes/updateUserInfo';
@@ -34,13 +37,17 @@ export const handleEvents = async (): Promise<any> => {
     await handleStartCommand({ ctx, messagesUA });
   });
 
-  // bot.command("setlanguage", async (ctx: any): Promise<any> => {
-  //     await sendLanguageKeyboard({ ctx });
-  // });
+  bot.command('catalog', async (ctx: any): Promise<any> => {
+    await sendCatalogButton(ctx);
+  });
 
-  // bot.command("catalog", async (ctx: any): Promise<any> => {
-  //     await sendCatalogButton({ ctx });
-  // });
+  bot.command('protocols', async (ctx: any): Promise<any> => {
+    await sendProtocolsButtons(ctx);
+  });
+
+  bot.command('seminars', async (ctx: any): Promise<any> => {
+    await sendSeminarsSchedule(ctx);
+  });
 
   // Scenes handlers
   bot.action('registerNewUser', async (ctx: any): Promise<any> => {

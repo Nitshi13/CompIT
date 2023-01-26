@@ -11,15 +11,15 @@ import { URLS } from '../constants/urls';
 
 import MESSAGES_AU from '../translate/messagesUA.json';
 
-export const sendCatalogButton = async (ctx: any): Promise<any> => {
+export const sendProtocolsButtons = async (ctx: any): Promise<any> => {
   const keyboard = [
     [
       {
-        text: MESSAGES_AU.CATALOG_BTN_TITLE,
-        url: URLS.CATALOG_URL,
+        text: MESSAGES_AU.MEZO_PROTOCOL_BTN_TITLE,
+        url: URLS.PROTOCOL_MEZO,
       },
     ],
   ];
 
-  return await ctx.reply(`${MESSAGES_AU.CATALOG_PARAGRAPH}`, Markup.inlineKeyboard(keyboard));
+  return await ctx.reply(`${MESSAGES_AU.PROTOCOLS_PARAGRAPH}`, Markup.inlineKeyboard(keyboard));
 };

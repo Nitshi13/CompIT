@@ -5,24 +5,17 @@
  * "Роби добре, та тільки добре! А можеш? - Роби краще!"
  */
 require('dotenv').config();
-import express, { Express, Request, Response } from 'express';
+// import express, { Express, Request, Response } from 'express';
 
 import { connect } from './config/db.config';
 import { handleEvents } from './app';
 
-import { getProducts } from './routes/getProducts.routes';
+// import { getProducts } from './routes/getProducts.routes';
 
-const app: Express = express();
-const PORT: number = Number(process.env['PORT']) || 5000;
+// const app: Express = express();
+// const PORT: number = Number(process.env['PORT']) || 5000;
 
-app.use(express.urlencoded({ extended: true }));
-
-// app.get(
-//     "/api/get-products",
-//     async (req: Request, res: Response): Promise<any> => {
-//         getProducts(req, res);
-//     }
-// );
+// app.use(express.urlencoded({ extended: true }));
 
 const start = async (): Promise<any> => {
   try {
@@ -30,7 +23,7 @@ const start = async (): Promise<any> => {
     connect();
 
     // Start Epxress
-    app.listen(PORT, () => console.log(`App has been started on port ${PORT} `));
+    // app.listen(PORT, () => console.log(`App has been started on port ${PORT} `));
 
     // Start Telegram Bot
     await handleEvents();
