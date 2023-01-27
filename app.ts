@@ -16,14 +16,14 @@ import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
 import { sendCatalogButton } from './commands/sendCatalogButton';
 import { sendProtocolsButtons } from './commands/sendProtocolsButtons';
-import { sendSeminarsSchedule } from './commands/sendSeminarsSchedule';
 
 import { registerNewUser } from './scenes/registerNewUser';
 import { updateUserInfo } from './scenes/updateUserInfo';
+import { seminarRegisterUser } from './scenes/seminarRegisterUser';
 
 import messagesUA from './translate/messagesUA.json';
 
-const scenes = new Scenes.Stage([registerNewUser, updateUserInfo]);
+const scenes = new Scenes.Stage([registerNewUser, updateUserInfo, seminarRegisterUser]);
 
 export const handleEvents = async (): Promise<any> => {
   await setBotCommands(bot);
@@ -46,7 +46,7 @@ export const handleEvents = async (): Promise<any> => {
   });
 
   bot.command('seminars', async (ctx: any): Promise<any> => {
-    await sendSeminarsSchedule(ctx);
+    await ctx.scene.enter('seminarRegisterUser');
   });
 
   // Scenes handlers
@@ -72,11 +72,11 @@ export const handleEvents = async (): Promise<any> => {
   bot.use(async (ctx: any) => {
     const actionFromButton: string = ctx?.update?.callback_query?.data || '';
     const isActivateUserAction: boolean = /^activate_user_id=/.test(actionFromButton);
-    const isВDeactivateUserAction: boolean = /^deactivate_user_id=/.test(actionFromButton);
+    const isDeactivateUserAction: boolean = /^deactivate_user_id=/.test(actionFromButton);
 
     if (isActivateUserAction) {
       await activateUserProfile(actionFromButton, ctx);
-    } else if (isВDeactivateUserAction) {
+    } else if (isDeactivateUserAction) {
       await deactivateUserProfile(actionFromButton, ctx);
     }
   });
