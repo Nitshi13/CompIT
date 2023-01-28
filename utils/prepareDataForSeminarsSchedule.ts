@@ -8,7 +8,7 @@ export interface ISeminarItem {
   id?: string;
   date?: string;
   time?: string;
-  short_title?: string;
+  title?: string;
   status?: string;
 }
 

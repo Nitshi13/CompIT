@@ -11,6 +11,7 @@ import { setBotCommands } from './utils/setBotCommands';
 import { activateUserProfile } from './utils/activateUserProfile';
 import { deactivateUserProfile } from './utils/deactivateUserProfile';
 import { setUserDocument } from './utils/setUserDocument';
+import { addUserToSeminar } from './utils/addUserToSeminar';
 
 import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
@@ -73,11 +74,14 @@ export const handleEvents = async (): Promise<any> => {
     const actionFromButton: string = ctx?.update?.callback_query?.data || '';
     const isActivateUserAction: boolean = /^activate_user_id=/.test(actionFromButton);
     const isDeactivateUserAction: boolean = /^deactivate_user_id=/.test(actionFromButton);
+    const isUserRegisterToSeminar: boolean = /^add_user_to_seminar_id=/.test(actionFromButton);
 
     if (isActivateUserAction) {
       await activateUserProfile(actionFromButton, ctx);
     } else if (isDeactivateUserAction) {
       await deactivateUserProfile(actionFromButton, ctx);
+    } else if (isUserRegisterToSeminar) {
+      await addUserToSeminar(actionFromButton, ctx);
     }
   });
 

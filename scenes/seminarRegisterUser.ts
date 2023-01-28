@@ -7,15 +7,21 @@
 const { Scenes, Markup } = require('telegraf');
 import { format } from 'date-fns';
 
+import { getUser } from '../repository/getUser';
+
 import { getSeminarsShedule } from '../utils/getSeminarsShedule';
 import { ISeminarItem, prepareDataForSeminarsSchedule } from '../utils/prepareDataForSeminarsSchedule';
+import { handleDelayedSendMessage } from '../utils/handleDelayedSendMessage';
+import { sendRegisterBtn } from '../utils/sendRegisterBtn';
 
 import MESSAGES_AU from '../translate/messagesUA.json';
+import { POSITIONS } from '../constants/positions';
 
 export const seminarRegisterUser = new Scenes.WizardScene(
   'seminarRegisterUser',
   async (ctx: any): Promise<any> => {
     await ctx.reply(`${MESSAGES_AU.LOADER}`);
+    const chatId: number = ctx?.update?.message?.from?.id;
 
     // Get data from Google Sheets
     const seminarsData: Array<string[]> = await getSeminarsShedule(ctx);
@@ -42,10 +48,10 @@ export const seminarRegisterUser = new Scenes.WizardScene(
       return ctx.scene.leave();
     }
 
-    const keyboard = filteredSeminarsData.map(({ id, date, short_title }) => {
+    const keyboard = filteredSeminarsData.map(({ id, date, title }) => {
       const formattedDate = format(new Date(date), 'dd-MM');
 
-      return [Markup.button.callback(`${formattedDate} ${short_title}`, `seminar_register=${id}`)];
+      return [Markup.button.callback(`${formattedDate} ${title}`, `seminar_register=${id}`)];
     });
 
     await ctx.reply(`${MESSAGES_AU.SEMINARS_SHEDULE}`, Markup.inlineKeyboard(keyboard));
@@ -53,33 +59,92 @@ export const seminarRegisterUser = new Scenes.WizardScene(
     // Add store 'seminarsData' to send them to next step
     ctx.wizard.state.userData = {};
     ctx.wizard.state.userData.seminars = filteredSeminarsData;
+    ctx.wizard.state.userData.chatId = chatId;
 
     return ctx.wizard.next();
   },
 
   async (ctx: any): Promise<any> => {
-    const userPosition: string = ctx?.update?.callback_query?.data;
+    const checkedSeminar: string = ctx?.update?.callback_query?.data;
 
-    if (!userPosition) {
+    if (!checkedSeminar) {
       await ctx.reply(`${MESSAGES_AU.ERROR_USER_SELECT_SEMINAR}`);
       return;
     }
 
-    const selectedSeminarId: number = Number(userPosition.replace('seminar_register=', ''));
-    const { seminars } = ctx.wizard.state.userData;
+    const selectedSeminarId: number = Number(checkedSeminar.replace('seminar_register=', ''));
+    const { seminars, chatId } = ctx.wizard.state.userData;
 
     const selectedSeminarData = seminars.filter(({ id }) => id === selectedSeminarId)[0];
-    const { date, time, format: seminarFormat, address } = selectedSeminarData;
+    const {
+      date,
+      time,
+      format: seminarFormat,
+      address,
+      title,
+      description,
+      speaker,
+      about_speaker,
+      paid,
+    } = selectedSeminarData;
     const formattedDate = format(new Date(date), 'dd-MM-yyyy');
     const formattedTime = time.replace('-', ':');
+    const isPaid = paid === 'Так' || paid === 'так' || paid === '+';
 
     let seminarDataToReply = `${MESSAGES_AU.SEMINARS_DETAILS}`;
     seminarDataToReply += `\n${MESSAGES_AU.DATE} ${formattedDate}`;
     seminarDataToReply += `\n${MESSAGES_AU.TIME} ${formattedTime}`;
     seminarDataToReply += `\n${MESSAGES_AU.FORMAT} ${seminarFormat}`;
     seminarDataToReply += `\n${MESSAGES_AU.ADDRESS} ${address}`;
+    seminarDataToReply += `\n${MESSAGES_AU.PAID} ${isPaid ? MESSAGES_AU.YES : MESSAGES_AU.NO}`;
+
+    seminarDataToReply += `\n\n${title}`;
+    seminarDataToReply += `\n${description}`;
+
+    seminarDataToReply += `\n\n${MESSAGES_AU.SPEAKER} ${speaker}`;
+    seminarDataToReply += `\n${MESSAGES_AU.ABOUT_SPEAKER} ${about_speaker}`;
 
     await ctx.reply(seminarDataToReply);
+
+    const userData = await getUser({ chatId }, ctx);
+
+    if (!userData) {
+      await ctx.reply(MESSAGES_AU.ERROR_ACCESS_SEMINAR);
+
+      await handleDelayedSendMessage({
+        delayValue: 1000,
+        ctx,
+        action: sendRegisterBtn,
+      });
+
+      return ctx.scene.leave();
+    }
+
+    const { position, isActive, certificate } = userData;
+
+    if (position === POSITIONS.PERSON) {
+      await ctx.reply(MESSAGES_AU.ERROR_ACCESS_SEMINAR_FOR_PERSON);
+
+      return ctx.scene.leave();
+    }
+
+    // Here we have specialist with not uploaded certificate
+    if (!certificate) {
+      await ctx.reply(MESSAGES_AU.ERROR_NOT_UPLOADED_SERTIFICATE);
+
+      return ctx.scene.leave();
+    }
+
+    // Here we have specialist with not activated profile
+    if (!isActive) {
+      await ctx.reply(MESSAGES_AU.ERROR_NOT_ACTIVE_SPECIALIST_PROFILE);
+
+      return ctx.scene.leave();
+    }
+
+    const keyboard = [[Markup.button.callback('Записатися на семінар', `add_user_to_seminar_id=${selectedSeminarId}`)]];
+
+    await ctx.reply(`${MESSAGES_AU.REGISTER_USER_TO_SEMINAR}`, Markup.inlineKeyboard(keyboard));
 
     return ctx.scene.leave();
   },
