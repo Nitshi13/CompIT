@@ -68,8 +68,7 @@ export const seminarRegisterUser = new Scenes.WizardScene(
     const checkedSeminar: string = ctx?.update?.callback_query?.data;
 
     if (!checkedSeminar) {
-      await ctx.reply(`${MESSAGES_AU.ERROR_USER_SELECT_SEMINAR}`);
-      return;
+      return ctx.scene.leave();
     }
 
     const selectedSeminarId: number = Number(checkedSeminar.replace('seminar_register=', ''));
