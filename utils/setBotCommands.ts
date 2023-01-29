@@ -8,7 +8,7 @@ export const setBotCommands = async (bot: any): Promise<any> => {
   await bot.telegram.setMyCommands([
     {
       command: '/start',
-      description: 'для старту, все логічно 😉',
+      description: 'для старту 😉',
     },
     {
       command: '/catalog',

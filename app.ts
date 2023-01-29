@@ -12,6 +12,7 @@ import { activateUserProfile } from './utils/activateUserProfile';
 import { deactivateUserProfile } from './utils/deactivateUserProfile';
 import { setUserDocument } from './utils/setUserDocument';
 import { addUserToSeminar } from './utils/addUserToSeminar';
+import { sendAvailableReports } from './utils/sendAvailableReports';
 
 import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
@@ -24,6 +25,8 @@ import { registerNewUser } from './scenes/registerNewUser';
 import { updateUserInfo } from './scenes/updateUserInfo';
 import { seminarRegisterUser } from './scenes/seminarRegisterUser';
 import { createMailing } from './scenes/createMailing';
+
+import { handleReportNewUsers } from './reports/handleReportNewUsers';
 
 import messagesUA from './translate/messagesUA.json';
 
@@ -72,6 +75,14 @@ export const handleEvents = async (): Promise<any> => {
 
   bot.action('createMailing', async (ctx: any): Promise<any> => {
     await ctx.scene.enter('createMailing');
+  });
+
+  bot.action('getAllReports', async (ctx: any): Promise<any> => {
+    await sendAvailableReports(ctx);
+  });
+
+  bot.action('reportNewUsers', async (ctx: any): Promise<any> => {
+    await handleReportNewUsers(ctx);
   });
 
   // Update user role to Admin
