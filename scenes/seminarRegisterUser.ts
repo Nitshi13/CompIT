@@ -102,9 +102,9 @@ export const seminarRegisterUser = new Scenes.WizardScene(
     seminarDataToReply += `\n${description}`;
 
     seminarDataToReply += `\n\n${MESSAGES_AU.SPEAKER} ${speaker}`;
-    seminarDataToReply += `\n${MESSAGES_AU.ABOUT_SPEAKER} ${about_speaker}`;
+    seminarDataToReply += `\n${about_speaker}`;
 
-    await ctx.reply(seminarDataToReply);
+    await ctx.reply(seminarDataToReply, { parse_mode: 'html' });
 
     const userData = await getUser({ chatId }, ctx);
 
@@ -142,7 +142,9 @@ export const seminarRegisterUser = new Scenes.WizardScene(
       return ctx.scene.leave();
     }
 
-    const keyboard = [[Markup.button.callback('Записатися на семінар', `add_user_to_seminar_id=${selectedSeminarId}`)]];
+    const keyboard = [
+      [Markup.button.callback('Записатися на семінар', `add_user_to_seminar?date=${formattedDate}&time=${time}`)],
+    ];
 
     await ctx.reply(`${MESSAGES_AU.REGISTER_USER_TO_SEMINAR}`, Markup.inlineKeyboard(keyboard));
 

@@ -4,13 +4,19 @@
  * Telegram @Yurets7777 E-mail: yuretshome@gmail.com
  * "Роби добре, та тільки добре! А можеш? - Роби краще!"
  */
+const { Markup } = require('telegraf');
+
+import { IMessages } from '../interfaces/IMessage';
 import { IUser } from '../model/user.model';
 
 import { sendRegisterBtn } from '../utils/sendRegisterBtn';
 import { handleDelayedSendMessage } from '../utils/handleDelayedSendMessage';
-import { IMessages } from '../interfaces/IMessage';
 
 import { getUser } from '../repository/getUser';
+
+import { uppercaseWords } from '../utils/uppercaseWords';
+
+import { USER_ROLES } from '../constants/userRoles';
 
 export const handleStartCommand = async (options: { ctx: any; messagesUA: IMessages }): Promise<any> => {
   const { ctx, messagesUA } = options;
@@ -54,4 +60,20 @@ export const handleStartCommand = async (options: { ctx: any; messagesUA: IMessa
       action: sendRegisterBtn,
     });
   }
+
+  // Handlers for exist users
+  const { firstName, userRole } = userData;
+
+  if (userRole === USER_ROLES.USER) {
+    return await ctx.reply(`${uppercaseWords(firstName)}, ${messagesUA.START_MESSAGE_EXIST_USER}`);
+  }
+
+  const keyboard = [
+    [
+      Markup.button.callback(messagesUA.ADMIN_MAILING_BTN_TITLE, 'createMailing'),
+      Markup.button.callback(messagesUA.ADMIN_REPORTS_BTN_TITLE, 'getAllReports'),
+    ],
+  ];
+
+  return await ctx.reply(`${messagesUA.ADMIN_AVAILABLE_REPORTS}`, Markup.inlineKeyboard(keyboard));
 };

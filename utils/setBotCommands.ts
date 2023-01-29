@@ -5,34 +5,34 @@
  * "Роби добре, та тільки добре! А можеш? - Роби краще!"
  */
 export const setBotCommands = async (bot: any): Promise<any> => {
-    await bot.telegram.setMyCommands([
-        {
-            command: "/start",
-            description: "для старту, все логічно 😉",
-        },
-        {
-            command: "/catalog",
-            description: "переглянути каталог продукції 📘",
-        },
-        {
-            command: "/protocols",
-            description: "протоколи по продукції 👩‍⚕️",
-        },
-        {
-            command: "/seminars",
-            description: "запис на семінари 👩‍🎓",
-        },
-        {
-            command: "/promo",
-            description: "промо активності 😉",
-        },
-        {
-            command: "/new_products",
-            description: "новинки 🌷",
-        },
-        {
-            command: "/contact_us",
-            description: "зв'язатися із менеджером ✍️",
-        },
-    ]);
+  await bot.telegram.setMyCommands([
+    {
+      command: '/start',
+      description: 'для старту, все логічно 😉',
+    },
+    {
+      command: '/catalog',
+      description: 'переглянути каталог продукції 📘',
+    },
+    {
+      command: '/protocols',
+      description: 'протоколи по продукції 👩‍⚕️',
+    },
+    {
+      command: '/seminars',
+      description: 'запис на семінари 👩‍🎓',
+    },
+    // {
+    //     command: "/promo",
+    //     description: "промо активності 😉",
+    // },
+    {
+      command: '/new_products',
+      description: 'новинки 🌷',
+    },
+    {
+      command: '/contact_us',
+      description: "зв'язатися із менеджером ✍️",
+    },
+  ]);
 };

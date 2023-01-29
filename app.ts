@@ -17,14 +17,17 @@ import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
 import { sendCatalogButton } from './commands/sendCatalogButton';
 import { sendProtocolsButtons } from './commands/sendProtocolsButtons';
+import { handleContactUs } from './commands/handleContactUs';
+import { sendNewProductsButton } from './commands/sendNewProductsButton';
 
 import { registerNewUser } from './scenes/registerNewUser';
 import { updateUserInfo } from './scenes/updateUserInfo';
 import { seminarRegisterUser } from './scenes/seminarRegisterUser';
+import { createMailing } from './scenes/createMailing';
 
 import messagesUA from './translate/messagesUA.json';
 
-const scenes = new Scenes.Stage([registerNewUser, updateUserInfo, seminarRegisterUser]);
+const scenes = new Scenes.Stage([registerNewUser, updateUserInfo, seminarRegisterUser, createMailing]);
 
 export const handleEvents = async (): Promise<any> => {
   await setBotCommands(bot);
@@ -50,6 +53,14 @@ export const handleEvents = async (): Promise<any> => {
     await ctx.scene.enter('seminarRegisterUser');
   });
 
+  bot.command('new_products', async (ctx: any): Promise<any> => {
+    await sendNewProductsButton(ctx);
+  });
+
+  bot.command('contact_us', async (ctx: any): Promise<any> => {
+    await handleContactUs(ctx);
+  });
+
   // Scenes handlers
   bot.action('registerNewUser', async (ctx: any): Promise<any> => {
     await ctx.scene.enter('registerNewUser');
@@ -57,6 +68,10 @@ export const handleEvents = async (): Promise<any> => {
 
   bot.action('updateUserInfo', async (ctx: any): Promise<any> => {
     await ctx.scene.enter('updateUserInfo');
+  });
+
+  bot.action('createMailing', async (ctx: any): Promise<any> => {
+    await ctx.scene.enter('createMailing');
   });
 
   // Update user role to Admin
@@ -74,7 +89,7 @@ export const handleEvents = async (): Promise<any> => {
     const actionFromButton: string = ctx?.update?.callback_query?.data || '';
     const isActivateUserAction: boolean = /^activate_user_id=/.test(actionFromButton);
     const isDeactivateUserAction: boolean = /^deactivate_user_id=/.test(actionFromButton);
-    const isUserRegisterToSeminar: boolean = /^add_user_to_seminar_id=/.test(actionFromButton);
+    const isUserRegisterToSeminar: boolean = /^add_user_to_seminar/.test(actionFromButton);
 
     if (isActivateUserAction) {
       await activateUserProfile(actionFromButton, ctx);
