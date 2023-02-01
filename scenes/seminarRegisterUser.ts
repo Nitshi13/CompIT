@@ -88,8 +88,7 @@ export const seminarRegisterUser = new Scenes.WizardScene(
       about_speaker,
       paid,
     } = selectedSeminarData;
-    // TODO: Fix Date!
-    const formattedDate = format(new Date(date), 'dd-MM-yyyy');
+    const formattedDate = format(addHours(new Date(date), 2), 'dd-MM');
     const formattedTime = time.replace('-', ':');
     const isPaid = paid === 'Так' || paid === 'так' || paid === '+';
 
