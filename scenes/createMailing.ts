@@ -100,9 +100,17 @@ export const createMailing = new Scenes.WizardScene(
     for (let i = 0; i < specialists.length; i++) {
       const { chatId } = specialists[i];
       if (!imageId) {
-        await bot.telegram.sendMessage(chatId, message);
+        try {
+          await bot.telegram.sendMessage(chatId, message);
+        } catch (error) {
+          console.log('[error.message]', error.message);
+        }
       } else {
-        await bot.telegram.sendPhoto(chatId, imageId, { caption: `${message}` });
+        try {
+          await bot.telegram.sendPhoto(chatId, imageId, { caption: `${message}` });
+        } catch (error) {
+          console.log('[error.message]', error.message);
+        }
       }
     }
 
