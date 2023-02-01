@@ -5,7 +5,7 @@
  * "Роби добре, та тільки добре! А можеш? - Роби краще!"
  */
 const { Scenes, Markup } = require('telegraf');
-import { format, addDays } from 'date-fns';
+import { addHours, format } from 'date-fns';
 
 import { getUser } from '../repository/getUser';
 
@@ -49,7 +49,7 @@ export const seminarRegisterUser = new Scenes.WizardScene(
     }
 
     const keyboard = filteredSeminarsData.map(({ id, date, title }) => {
-      const formattedDate = format(new Date(date), 'dd-MM');
+      const formattedDate = format(addHours(new Date(date), 2), 'dd-MM');
 
       return [Markup.button.callback(`${formattedDate} ${title}`, `seminar_register=${id}`)];
     });
@@ -89,7 +89,7 @@ export const seminarRegisterUser = new Scenes.WizardScene(
       paid,
     } = selectedSeminarData;
     // TODO: Fix Date!
-    const formattedDate = format(addDays(new Date(date), 1), 'dd-MM-yyyy');
+    const formattedDate = format(new Date(date), 'dd-MM-yyyy');
     const formattedTime = time.replace('-', ':');
     const isPaid = paid === 'Так' || paid === 'так' || paid === '+';
 
