@@ -16,6 +16,7 @@ import { sendAvailableReports } from './utils/sendAvailableReports';
 
 import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
+import { updateAdmin } from './commands/updateAdmin';
 import { sendCatalogButton } from './commands/sendCatalogButton';
 import { sendProtocolsButtons } from './commands/sendProtocolsButtons';
 import { handleContactUs } from './commands/handleContactUs';
@@ -88,6 +89,11 @@ export const handleEvents = async (): Promise<any> => {
   // Update user role to Admin
   bot.hears(`set_admin_${process.env['ADMIN_SECRET_KEY']}`, async (ctx: any): Promise<any> => {
     await setAdmin(ctx);
+  });
+
+  // Update admin to user
+  bot.hears(`update_admin_${process.env['ADMIN_SECRET_KEY']}`, async (ctx: any): Promise<any> => {
+    await updateAdmin(ctx);
   });
 
   // Bot waiting for any photo

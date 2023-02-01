@@ -9,7 +9,7 @@ import { UserModel, IUser } from '../model/user.model';
 import MESSAGES_AU from '../translate/messagesUA.json';
 
 export const getUsers = async (
-  user: { position?: string; isActive?: boolean; userRole?: string; createdAt? },
+  user: { position?; isActive?: boolean; userRole?: string; createdAt? },
   ctx: any,
 ): Promise<any> => {
   let users = null;

@@ -16,7 +16,7 @@ export const sendProtocolsButtons = async (ctx: any): Promise<any> => {
     [
       {
         text: MESSAGES_AU.MEZO_PROTOCOL_BTN_TITLE,
-        url: URLS.PROTOCOL_MEZO,
+        url: URLS.PROTOCOL,
       },
     ],
   ];

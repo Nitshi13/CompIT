@@ -51,5 +51,5 @@ export const handleReportNewUsers = async (ctx: any) => {
   messageToReply += `\n${MESSAGES_AU.REPORT_NEW_USERS_MONTH_CLINICS} ${clinicsTotalCount}`;
   messageToReply += `\n${MESSAGES_AU.REPORT_NEW_USERS_MONTH_PERSONS} ${personsTotalCount}`;
 
-  return await ctx.reply(messageToReply);
+  return await ctx.reply(messageToReply, { parse_mode: 'html' });
 };

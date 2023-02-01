@@ -12,6 +12,7 @@ import { handleUserDocument } from '../utils/handleUserDocument';
 
 import MESSAGES_AU from '../translate/messagesUA.json';
 import { getUsers } from '../repository/getUsers';
+import { POSITIONS } from '../constants/positions';
 
 export const createMailing = new Scenes.WizardScene(
   'createMailing',
@@ -90,12 +91,14 @@ export const createMailing = new Scenes.WizardScene(
       return ctx.scene.leave();
     }
 
-    const users = await getUsers({}, ctx);
+    const specialists = await getUsers(
+      { position: { $in: [POSITIONS.COSMETOLOGIST, POSITIONS.CLINIC, POSITIONS.DERMATOLOGIST, POSITIONS.MASSEUR] } },
+      ctx,
+    );
     const { imageId, message } = ctx.wizard.state.mailingData;
 
-    for (let i = 0; i < users.length; i++) {
-      const { chatId } = users[i];
-
+    for (let i = 0; i < specialists.length; i++) {
+      const { chatId } = specialists[i];
       if (!imageId) {
         await bot.telegram.sendMessage(chatId, message);
       } else {

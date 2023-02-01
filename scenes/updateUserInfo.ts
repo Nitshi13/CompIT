@@ -41,7 +41,7 @@ export const updateUserInfo = new Scenes.WizardScene(
       return;
     }
 
-    await ctx.reply(MESSAGES_AU.ONE_SEC, { parse_mode: 'html' });
+    await ctx.reply(MESSAGES_AU.LOADER, { parse_mode: 'html' });
 
     const { position } = await getUser({ chatId }, ctx);
 

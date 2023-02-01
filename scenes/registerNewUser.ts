@@ -125,7 +125,7 @@ export const registerNewUser = new Scenes.WizardScene(
       return;
     }
 
-    await ctx.reply(MESSAGES_AU.ONE_SEC, { parse_mode: 'html' });
+    await ctx.reply(MESSAGES_AU.LOADER, { parse_mode: 'html' });
 
     // Set user position
     ctx.wizard.state.userData.position = userPosition;
