@@ -19,6 +19,18 @@ export const sendCatalogButton = async (ctx: any): Promise<any> => {
         url: URLS.CATALOG_URL,
       },
     ],
+    [
+      {
+        text: MESSAGES_AU.INULA_LINE,
+        url: URLS.PRODUCT_LINE_INULA,
+      },
+    ],
+    [
+      {
+        text: MESSAGES_AU.APRICOT_LINE,
+        url: URLS.PRODUCT_LINE_APRICOT,
+      },
+    ],
   ];
 
   return await ctx.reply(`${MESSAGES_AU.CATALOG_PARAGRAPH}`, Markup.inlineKeyboard(keyboard));
