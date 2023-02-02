@@ -81,12 +81,6 @@ export const sendCatalogButton = async (ctx: any): Promise<any> => {
     ],
     [
       {
-        text: MESSAGES_AU.PRO_PEELS_LINE,
-        url: URLS.PRODUCT_LINE_APPARAT,
-      },
-    ],
-    [
-      {
         text: MESSAGES_AU.APPARAT_LINE,
         url: URLS.PRODUCT_LINE_APPARAT,
       },
