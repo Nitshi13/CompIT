@@ -90,14 +90,14 @@ export const seminarRegisterUser = new Scenes.WizardScene(
     } = selectedSeminarData;
     const formattedDate = format(addHours(new Date(date), 2), 'dd-MM');
     const formattedTime = time.replace('-', ':');
-    const isPaid = paid === 'Так' || paid === 'так' || paid === '+';
+    const isPaid = paid === '0' || paid === '';
 
     let seminarDataToReply = `${MESSAGES_AU.SEMINARS_DETAILS}`;
     seminarDataToReply += `\n${MESSAGES_AU.DATE} ${formattedDate}`;
     seminarDataToReply += `\n${MESSAGES_AU.TIME} ${formattedTime}`;
     seminarDataToReply += `\n${MESSAGES_AU.FORMAT} ${seminarFormat}`;
     seminarDataToReply += `\n${MESSAGES_AU.ADDRESS} ${address}`;
-    seminarDataToReply += `\n${MESSAGES_AU.PAID} ${isPaid ? MESSAGES_AU.YES : MESSAGES_AU.NO}`;
+    seminarDataToReply += `\n${MESSAGES_AU.PAID} ${isPaid ? MESSAGES_AU.YES : paid}`;
 
     seminarDataToReply += `\n\n${title}`;
     seminarDataToReply += `\n${description}`;
