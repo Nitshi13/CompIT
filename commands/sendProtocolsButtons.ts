@@ -15,8 +15,14 @@ export const sendProtocolsButtons = async (ctx: any): Promise<any> => {
   const keyboard = [
     [
       {
-        text: MESSAGES_AU.MEZO_PROTOCOL_BTN_TITLE,
+        text: MESSAGES_AU.PROTOCOL_BTN_TITLE,
         url: URLS.PROTOCOL,
+      },
+    ],
+    [
+      {
+        text: MESSAGES_AU.MEZO_PROTOCOL_BTN_TITLE,
+        url: URLS.PROTOCOL_MEZO,
       },
     ],
   ];
