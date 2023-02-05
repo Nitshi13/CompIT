@@ -59,6 +59,8 @@ export const handleStartCommand = async (options: { ctx: any; messagesUA: IMessa
       ctx,
       action: sendRegisterBtn,
     });
+
+    return;
   }
 
   // Handlers for exist users

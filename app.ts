@@ -13,6 +13,7 @@ import { deactivateUserProfile } from './utils/deactivateUserProfile';
 import { setUserDocument } from './utils/setUserDocument';
 import { addUserToSeminar } from './utils/addUserToSeminar';
 import { sendAvailableReports } from './utils/sendAvailableReports';
+import { handleContactAdmin } from './utils/handleContactAdmin';
 
 import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
@@ -65,7 +66,7 @@ export const handleEvents = async (): Promise<any> => {
     await handleContactUs(ctx);
   });
 
-  // Scenes handlers
+  // Scenes and actions handlers
   bot.action('registerNewUser', async (ctx: any): Promise<any> => {
     await ctx.scene.enter('registerNewUser');
   });
@@ -84,6 +85,10 @@ export const handleEvents = async (): Promise<any> => {
 
   bot.action('reportNewUsers', async (ctx: any): Promise<any> => {
     await handleReportNewUsers(ctx);
+  });
+
+  bot.action('contactAdmin', async (ctx: any): Promise<any> => {
+    await handleContactAdmin(ctx);
   });
 
   // Update user role to Admin
