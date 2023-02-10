@@ -14,8 +14,8 @@ import MESSAGES_AU from '../translate/messagesUA.json';
 import { getUsers } from '../repository/getUsers';
 import { POSITIONS } from '../constants/positions';
 
-export const createMailing = new Scenes.WizardScene(
-  'createMailing',
+export const createGeneralMailing = new Scenes.WizardScene(
+  'createGeneralMailing',
   async (ctx: any): Promise<any> => {
     const chatId = ctx?.update?.callback_query?.from?.id;
     await ctx.reply(MESSAGES_AU.MAILING_SCENE_UPLOAD_IMAGE);

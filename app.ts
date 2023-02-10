@@ -14,6 +14,7 @@ import { setUserDocument } from './utils/setUserDocument';
 import { addUserToSeminar } from './utils/addUserToSeminar';
 import { sendAvailableReports } from './utils/sendAvailableReports';
 import { handleContactAdmin } from './utils/handleContactAdmin';
+import { sendMailingBtns } from './utils/sendMailingBtns';
 
 import { handleStartCommand } from './commands/handleStartCommand';
 import { setAdmin } from './commands/setAdmin';
@@ -26,13 +27,20 @@ import { sendNewProductsButton } from './commands/sendNewProductsButton';
 import { registerNewUser } from './scenes/registerNewUser';
 import { updateUserInfo } from './scenes/updateUserInfo';
 import { seminarRegisterUser } from './scenes/seminarRegisterUser';
-import { createMailing } from './scenes/createMailing';
+import { createGeneralMailing } from './scenes/createMailing';
+import { createSeminarMailing } from './scenes/createSeminarMailing';
 
 import { handleReportNewUsers } from './reports/handleReportNewUsers';
 
 import messagesUA from './translate/messagesUA.json';
 
-const scenes = new Scenes.Stage([registerNewUser, updateUserInfo, seminarRegisterUser, createMailing]);
+const scenes = new Scenes.Stage([
+  registerNewUser,
+  updateUserInfo,
+  seminarRegisterUser,
+  createGeneralMailing,
+  createSeminarMailing,
+]);
 
 export const handleEvents = async (): Promise<any> => {
   await setBotCommands(bot);
@@ -76,7 +84,15 @@ export const handleEvents = async (): Promise<any> => {
   });
 
   bot.action('createMailing', async (ctx: any): Promise<any> => {
-    await ctx.scene.enter('createMailing');
+    await sendMailingBtns(ctx);
+  });
+
+  bot.action('createGeneralMailing', async (ctx: any): Promise<any> => {
+    await ctx.scene.enter('createGeneralMailing');
+  });
+
+  bot.action('createSeminarMailing', async (ctx: any): Promise<any> => {
+    await ctx.scene.enter('createSeminarMailing');
   });
 
   bot.action('getAllReports', async (ctx: any): Promise<any> => {
