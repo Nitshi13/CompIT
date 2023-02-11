@@ -128,7 +128,7 @@ export const createSeminarMailing = new Scenes.WizardScene(
       await bot.telegram.sendPhoto(chatId, imageId, { caption: `${message}` });
     }
 
-    ctx.reply(`${MESSAGES_AU.REGISTER_USER_TO_SEMINAR}`, Markup.inlineKeyboard(btnRegisterToSeminar));
+    await ctx.reply(`${MESSAGES_AU.REGISTER_USER_TO_SEMINAR}`, Markup.inlineKeyboard(btnRegisterToSeminar));
 
     const keyboard = [
       [
@@ -137,7 +137,7 @@ export const createSeminarMailing = new Scenes.WizardScene(
       ],
     ];
 
-    ctx.reply(`${MESSAGES_AU.ACCEPT_MESSAGE}`, Markup.inlineKeyboard(keyboard));
+    await ctx.reply(`${MESSAGES_AU.ACCEPT_MESSAGE}`, Markup.inlineKeyboard(keyboard));
 
     return ctx.wizard.next();
   },
